@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jhordan McGuire — AI Platform Consultant</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #4A7FA5;
+    --blue-light: #7AAFD4;
+    --blue-pale: #EBF3FA;
+    --blue-dark: #2C6E9E;
+    --slate-dark: #2C3440;
+    --slate-mid: #3D4D5C;
+    --slate-muted: #8A9BAD;
+    --text: #1a1d21;
+    --text-secondary: #5a6472;
+    --border: rgba(0,0,0,0.1);
+    --border-mid: rgba(0,0,0,0.15);
+    --bg: #ffffff;
+    --bg-secondary: #f5f7f9;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color: var(--text); background: var(--bg-secondary); line-height: 1.5; }
+
+  .page-wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* Top bar */
+  .top-bar { display: flex; align-items: center; gap: 12px; padding: 1.5rem 1.75rem; background: var(--bg); border-radius: var(--radius-lg); margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); flex-wrap: wrap; }
+  .accent-bar { width: 3px; height: 48px; background: var(--blue); border-radius: 2px; flex-shrink: 0; }
+  .name-block { margin-right: auto; }
+  .name-block h1 { font-size: 22px; font-weight: 600; color: var(--text); }
+  .name-block p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .tab-btn { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 400; border: 1px solid var(--border-mid); background: var(--bg); color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+  .tab-btn:hover { background: var(--bg-secondary); color: var(--text); }
+  .tab-btn.active { background: var(--slate-dark); color: #fff; border-color: var(--slate-dark); font-weight: 500; }
+  .target-btn { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1px solid var(--border-mid); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.15s; }
+  .target-btn.active { border-color: var(--blue); color: var(--blue); background: var(--blue-pale); }
+  .target-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .divider-v { width: 1px; height: 24px; background: var(--border); }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Hero */
+  .hero { background: var(--slate-dark); border-radius: var(--radius-lg); padding: 2.25rem 2.5rem; margin-bottom: 1.25rem; position: relative; overflow: hidden; }
+  .hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--blue-light); text-transform: uppercase; margin-bottom: 0.75rem; }
+  .hero h2 { font-size: 28px; font-weight: 600; color: #fff; line-height: 1.25; margin-bottom: 0.8rem; }
+  .hero p { font-size: 14px; color: var(--slate-muted); line-height: 1.7; max-width: 500px; }
+  .hero-stats { position: absolute; top: 2.25rem; right: 2.5rem; text-align: right; display: flex; flex-direction: column; gap: 0.75rem; }
+  .hero-stat-val { font-size: 30px; font-weight: 600; color: var(--blue-light); line-height: 1; }
+  .hero-stat-lbl { font-size: 11px; color: var(--slate-muted); margin-top: 2px; }
+
+  /* Cards */
+  .card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
+  .card-title { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; color: var(--slate-mid); text-transform: uppercase; margin-bottom: 1rem; }
+
+  /* Grids */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-2-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Platform cards */
+  .platform-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.2rem; display: flex; align-items: flex-start; gap: 12px; }
+  .platform-icon { width: 38px; height: 38px; border-radius: 8px; background: var(--blue-pale); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--blue-dark); flex-shrink: 0; }
+  .platform-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .platform-tags { font-size: 12px; color: var(--blue); line-height: 1.5; }
+
+  /* Rows */
+  .info-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); }
+  .info-row:last-child { border-bottom: none; }
+  .info-row-val { font-weight: 600; font-size: 13px; color: var(--blue); white-space: nowrap; margin-left: 12px; }
+  .metric-val { font-weight: 600; font-size: 14px; color: var(--slate-mid); white-space: nowrap; margin-left: 12px; }
+
+  /* Section label */
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; color: var(--slate-mid); text-transform: uppercase; margin: 1.75rem 0 0.75rem; }
+
+  /* Match banner */
+  .match-banner { background: var(--blue-pale); border: 1px solid var(--blue); border-radius: var(--radius-lg); padding: 1.1rem 1.5rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 1.5rem; }
+  .match-score { font-size: 36px; font-weight: 700; color: var(--blue-dark); line-height: 1; white-space: nowrap; }
+  .match-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--blue); margin-bottom: 4px; }
+  .match-sub { font-size: 13px; color: var(--blue-dark); margin-bottom: 8px; }
+  .match-bar-track { height: 5px; background: #c8dff0; border-radius: 3px; overflow: hidden; }
+  .match-bar-fill { height: 100%; background: var(--blue); border-radius: 3px; width: 96%; }
+
+  /* Req grid */
+  .req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+  .req-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.1rem; display: flex; gap: 10px; align-items: flex-start; }
+  .req-check { color: var(--blue); font-size: 16px; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
+  .req-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .req-detail { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* Dark card */
+  .dark-card { background: var(--slate-dark); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 1.25rem; }
+  .dark-card-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--blue-light); margin-bottom: 0.6rem; }
+  .dark-card-text { font-size: 14px; color: var(--slate-muted); line-height: 1.75; }
+
+  /* Service lines */
+  .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+  .svc-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.2rem; }
+  .svc-line { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--blue); margin-bottom: 6px; }
+  .svc-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .svc-bullets { list-style: none; padding: 0; }
+  .svc-bullets li { font-size: 12px; color: var(--text-secondary); padding: 2px 0 2px 12px; position: relative; line-height: 1.5; }
+  .svc-bullets li::before { content: '·'; position: absolute; left: 0; color: var(--blue); font-weight: 700; }
+
+  /* Champion & hack cards */
+  .champion-card { background: var(--blue-pale); border: 1px solid var(--blue); border-radius: var(--radius-lg); padding: 1.2rem 1.5rem; margin-bottom: 10px; display: flex; gap: 1.25rem; align-items: flex-start; }
+  .champion-badge { background: var(--blue); color: #fff; border-radius: 8px; padding: 9px 12px; font-size: 10px; font-weight: 700; text-align: center; line-height: 1.5; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.03em; }
+  .champion-title { font-size: 14px; font-weight: 600; color: var(--blue-dark); margin-bottom: 5px; }
+  .champion-detail { font-size: 13px; color: var(--blue-dark); line-height: 1.65; opacity: 0.9; }
+  .hack-card { background: var(--bg); border: 1px solid var(--blue); border-radius: var(--radius-lg); padding: 1.2rem 1.5rem; margin-bottom: 10px; display: flex; gap: 1.25rem; align-items: flex-start; }
+  .hack-badge { background: var(--slate-dark); color: var(--blue-light); border-radius: 8px; padding: 9px 12px; font-size: 10px; font-weight: 700; text-align: center; line-height: 1.5; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.03em; }
+  .hack-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+  .hack-detail { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 10px; }
+
+  /* Tags */
+  .tag { display: inline-block; font-size: 11px; padding: 4px 10px; border-radius: 10px; background: var(--blue-pale); color: var(--blue-dark); margin-right: 5px; margin-top: 4px; font-weight: 500; }
+  .tag-slate { background: var(--bg-secondary); color: var(--slate-mid); border: 1px solid var(--border); }
+  .tag-live { background: #e6f4ea; color: #1a6e35; }
+  .tag-wrap { display: flex; flex-wrap: wrap; gap: 2px; }
+
+  /* How I work */
+  .hiw-grid { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.25rem; }
+  .hiw-step { padding: 1rem; background: var(--bg); border-right: 1px solid var(--border); }
+  .hiw-step:last-child { border-right: none; }
+  .hiw-num { font-size: 11px; font-weight: 700; color: var(--blue); margin-bottom: 5px; }
+  .hiw-name { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  .hiw-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* Stakeholder */
+  .sh-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .sh-pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; display: flex; align-items: center; gap: 7px; }
+  .sh-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
+  .sh-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.25rem; }
+
+  /* Tool cards */
+  .tool-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.2rem 1.35rem; }
+  .tool-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+  .tool-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
+  .tool-card-featured { background: var(--bg); border: 1px solid var(--blue); border-radius: var(--radius-lg); padding: 1.2rem 1.35rem; grid-column: span 2; }
+
+  /* Experience */
+  .exp-entry { margin-bottom: 2.25rem; }
+  .exp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3px; }
+  .exp-company { font-size: 16px; font-weight: 600; }
+  .exp-loc { font-size: 13px; color: var(--text-secondary); }
+  .exp-role-line { font-size: 13px; font-style: italic; color: var(--text-secondary); margin-bottom: 0.85rem; }
+  .exp-dates { font-size: 12px; color: var(--blue); font-weight: 500; }
+  .exp-bullets { list-style: none; padding: 0; }
+  .exp-bullets li { font-size: 13px; color: var(--text-secondary); line-height: 1.65; padding: 4px 0 4px 16px; position: relative; }
+  .exp-bullets li::before { content: '–'; position: absolute; left: 0; color: var(--blue); font-weight: 600; }
+  .exp-divider { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
+
+  /* Credentials */
+  .cred-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.5rem; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+  .cred-school { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .cred-degree { font-size: 13px; color: var(--text-secondary); }
+  .cred-focus { font-size: 12px; color: var(--blue); margin-top: 4px; font-weight: 500; }
+  .cred-year { font-size: 12px; color: var(--slate-mid); white-space: nowrap; font-weight: 600; }
+
+  /* Slate view hero eyebrow removal */
+  .slate-eyebrow-hide { display: none; }
+
+  @media (max-width: 680px) {
+    .hero-stats { position: static; text-align: left; flex-direction: row; flex-wrap: wrap; margin-top: 1.25rem; }
+    .hero p { max-width: 100%; }
+    .grid-3, .svc-grid, .hiw-grid { grid-template-columns: 1fr; }
+    .hiw-step { border-right: none; border-bottom: 1px solid var(--border); }
+    .hiw-step:last-child { border-bottom: none; }
+    .req-grid, .grid-2, .grid-2-tools { grid-template-columns: 1fr; }
+    .tool-card-featured { grid-column: span 1; }
+    .top-bar { gap: 8px; }
+    .tab-btn, .target-btn { padding: 7px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="accent-bar"></div>
+    <div class="name-block">
+      <h1>Jhordan McGuire</h1>
+      <p>AI Platform Consultant</p>
+    </div>
+    <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+    <button class="tab-btn" onclick="switchTab('tools',this)">Tools built</button>
+    <button class="tab-btn" onclick="switchTab('experience',this)">Experience</button>
+    <button class="tab-btn" onclick="switchTab('credentials',this)">Credentials</button>
+    <div class="divider-v"></div>
+    <button class="target-btn" id="btn-slate" onclick="setTarget('slate')">Slate</button>
+    <button class="target-btn active" id="btn-deloitte" onclick="setTarget('deloitte')">Deloitte</button>
+  </div>
+
+  <!-- OVERVIEW PANEL -->
+  <div id="panel-overview" class="panel active">
+
+    <!-- DELOITTE VIEW -->
+    <div id="overview-deloitte">
+      <div class="match-banner">
+        <div>
+          <div class="match-label">Job match · AI Workplace Platform Consultant</div>
+          <div class="match-score">96%</div>
+        </div>
+        <div style="flex:1;">
+          <div class="match-sub">Every required qualification met. Three preferred qualifications exceeded.</div>
+          <div class="match-bar-track"><div class="match-bar-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="hero-eyebrow">Targeting Deloitte · AI &amp; Engineering · Workplace Engineering</div>
+        <h2>The exact hire Deloitte's<br>Workplace Engineering team needs.</h2>
+        <p>Configured, deployed, and operationalized Claude, Copilot, and Gemini at scale — with federal security compliance, RBAC, SSO, and audit logging already live in production across a $15B DOD portfolio.</p>
+        <div class="hero-stats">
+          <div><div class="hero-stat-val">$96K</div><div class="hero-stat-lbl">Est. monthly ROI</div></div>
+          <div><div class="hero-stat-val">$15B</div><div class="hero-stat-lbl">Portfolio supported</div></div>
+          <div><div class="hero-stat-val">4</div><div class="hero-stat-lbl">Platforms live</div></div>
+        </div>
+      </div>
+
+      <div class="champion-card">
+        <div class="champion-badge">JLL AI<br>Champion<br>Program</div>
+        <div>
+          <div class="champion-title">Selected as AI Champion — Public Institutions / DOD Portfolio</div>
+          <div class="champion-detail">One champion selected per portfolio across JLL. Responsible for team AI training, workflow deployment, and ROI tracking. Also named 1 of only 10 people across all of JLL Public Institutions to receive Anthropic Claude access — tasked with building agents and workflows deployed portfolio-wide.</div>
+        </div>
+      </div>
+
+      <div class="hack-card">
+        <div class="hack-badge">JLL<br>Hackathon<br>2026 · Live</div>
+        <div>
+          <div class="hack-title">Accelerate 2030 — AI Consultant for Government Reporting</div>
+          <div class="hack-detail">Currently building a CMMC Level 2 compliant AI consultant that consolidates the full government reporting workflow into a single AI-powered system — replacing the fragmented web of multiple tools consultants currently rely on.</div>
+          <div class="tag-wrap"><span class="tag">CMMC Level 2</span><span class="tag">Briefing generation</span><span class="tag">Financial forecasting</span><span class="tag">Unified AI interface</span><span class="tag tag-slate">In progress</span></div>
+        </div>
+      </div>
+
+      <div class="section-label">How I run a platform rollout</div>
+      <div class="hiw-grid">
+        <div class="hiw-step"><div class="hiw-num">01</div><div class="hiw-name">Discovery</div><div class="hiw-desc">Assess requirements, stakeholders, security constraints, and existing infrastructure</div></div>
+        <div class="hiw-step"><div class="hiw-num">02</div><div class="hiw-name">Configure</div><div class="hiw-desc">Set up identity, SSO, RBAC, data governance, and platform-specific settings</div></div>
+        <div class="hiw-step"><div class="hiw-num">03</div><div class="hiw-name">Pilot</div><div class="hiw-desc">Deploy to a controlled user group, gather feedback, and refine workflows</div></div>
+        <div class="hiw-step"><div class="hiw-num">04</div><div class="hiw-name">Production</div><div class="hiw-desc">Full rollout with enablement training, runbooks, and change management support</div></div>
+        <div class="hiw-step"><div class="hiw-num">05</div><div class="hiw-name">Managed ops</div><div class="hiw-desc">Ongoing monitoring, audit logging, ROI tracking, and continuous improvement</div></div>
+      </div>
+
+      <div class="section-label">Stakeholder complexity</div>
+      <div class="sh-strip">
+        <div class="sh-pill"><div class="sh-dot"></div>Air Force Civil Engineering Center</div>
+        <div class="sh-pill"><div class="sh-dot"></div>High-level military leadership</div>
+        <div class="sh-pill"><div class="sh-dot"></div>DOD compliance officers</div>
+        <div class="sh-pill"><div class="sh-dot"></div>JLL executive leadership</div>
+        <div class="sh-pill"><div class="sh-dot"></div>Vendors &amp; contractors</div>
+        <div class="sh-pill"><div class="sh-dot"></div>Portfolio end users</div>
+      </div>
+      <div class="sh-desc">Regularly traveled ~40% of the time to conduct on-site visits to Air Force bases, delivering leadership briefings directly to high-level military personnel. Comfortable translating complex technical deployments into clear, executive-ready communications for audiences ranging from end users to senior DOD officials. Fully prepared for the 50% travel requirement of this role.</div>
+
+      <div class="section-label">Required qualifications — matched</div>
+      <div class="req-grid">
+        <div class="req-card"><div class="req-check">✓</div><div><div class="req-title">Direct Claude, Copilot &amp; Gemini experience</div><div class="req-detail">All three deployed at JLL across the full $15B Air Force P3 portfolio.</div></div></div>
+        <div class="req-card"><div class="req-check">✓</div><div><div class="req-title">3+ years project &amp; program management</div><div class="req-detail">3+ years managing capital projects, vendor contracts, and AI platform rollouts end-to-end.</div></div></div>
+        <div class="req-card"><div class="req-check">✓</div><div><div class="req-title">Enterprise implementation &amp; consulting</div><div class="req-detail">Large-scale AI platform adoption across a federal DOD portfolio — pilot through managed operations.</div></div></div>
+        <div class="req-card"><div class="req-check">✓</div><div><div class="req-title">M365 / Exchange ecosystem</div><div class="req-detail">Configured and deployed Microsoft Copilot within M365 with SSO and RBAC.</div></div></div>
+        <div class="req-card"><div class="req-check">✓</div><div><div class="req-title">Release planning &amp; change management</div><div class="req-detail">Led end-user enablement and change management across the full portfolio of users.</div></div></div>
+        <div class="req-card"><div class="req-check">✓</div><div><div class="req-title">Identity, access &amp; provisioning (SSO, RBAC)</div><div class="req-detail">Implemented identity provisioning, RBAC, and data governance to meet federal CUI requirements.</div></div></div>
+      </div>
+
+      <div class="section-label">Deloitte service lines — where I map</div>
+      <div class="svc-grid">
+        <div class="svc-card"><div class="svc-line">AI Strategy</div><div class="svc-title">Platform selection &amp; roadmap</div><ul class="svc-bullets"><li>Evaluated &amp; selected 4 AI platforms</li><li>Architected portfolio-wide adoption plan</li><li>Built governance &amp; ROI framework</li></ul></div>
+        <div class="svc-card"><div class="svc-line">AI Implementation</div><div class="svc-title">Deploy &amp; operationalize</div><ul class="svc-bullets"><li>Production rollout of Claude, Copilot, Gemini</li><li>SSO, RBAC, SCIM provisioning</li><li>CUI-compliant security configuration</li></ul></div>
+        <div class="svc-card"><div class="svc-line">Managed Operations</div><div class="svc-title">Run &amp; optimize</div><ul class="svc-bullets"><li>Ongoing platform management &amp; monitoring</li><li>Audit logging &amp; access governance</li><li>Runbooks &amp; technical documentation</li></ul></div>
+      </div>
+
+      <div class="dark-card">
+        <div class="dark-card-eyebrow">Why Deloitte</div>
+        <div class="dark-card-text">I've done this work in one of the most compliance-intensive environments possible. That makes every other enterprise deployment easier, faster, and lower risk.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Preferred qualifications — exceeded</div>
+          <div class="info-row"><span>Claude, Copilot &amp; Gemini enterprise platforms</span><span class="info-row-val">✓ All 3</span></div>
+          <div class="info-row"><span>SSO configuration (Entra ID / AAD)</span><span class="info-row-val">✓ Live</span></div>
+          <div class="info-row"><span>RBAC &amp; user lifecycle management</span><span class="info-row-val">✓ DOD</span></div>
+          <div class="info-row"><span>Audit logging &amp; access governance</span><span class="info-row-val">✓ Built</span></div>
+          <div class="info-row"><span>Runbooks &amp; technical documentation</span><span class="info-row-val">✓ Authored</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Impact by the numbers</div>
+          <div class="info-row"><span>Monthly ROI from AI deployments</span><span class="metric-val">$96K</span></div>
+          <div class="info-row"><span>DOD portfolio under advisement</span><span class="metric-val">$15B</span></div>
+          <div class="info-row"><span>Commercial sq. ft. managed</span><span class="metric-val">1M+</span></div>
+          <div class="info-row"><span>Years PM &amp; consulting experience</span><span class="metric-val">3+</span></div>
+          <div class="info-row"><span>AI platforms deployed enterprise-wide</span><span class="metric-val">4</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLATE VIEW -->
+    <div id="overview-slate" style="display:none;">
+      <div class="hero">
+        <div class="hero-eyebrow" style="visibility:hidden;">placeholder</div>
+        <h2>Enterprise AI consultant who builds,<br>deploys, and operationalizes at scale.</h2>
+        <p>Currently leading AI platform adoption across a $15B DOD portfolio — architecting and deploying enterprise workflows across Claude, Copilot, Gemini, and JLL GPT with full federal security compliance (CUI, RBAC, identity provisioning).</p>
+        <div class="hero-stats">
+          <div><div class="hero-stat-val">$96K</div><div class="hero-stat-lbl">Est. monthly ROI</div></div>
+          <div><div class="hero-stat-val">$15B</div><div class="hero-stat-lbl">Portfolio supported</div></div>
+          <div><div class="hero-stat-val">4</div><div class="hero-stat-lbl">Platforms deployed</div></div>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="platform-card"><div class="platform-icon">CL</div><div><div class="platform-name">Anthropic Claude</div><div class="platform-tags">Legal research · Financial forecasting · Agents</div></div></div>
+        <div class="platform-card"><div class="platform-icon">CO</div><div><div class="platform-name">Microsoft Copilot</div><div class="platform-tags">M365 ecosystem · SSO · RBAC</div></div></div>
+        <div class="platform-card"><div class="platform-icon">GE</div><div><div class="platform-name">Google Gemini</div><div class="platform-tags">Workspace integration · Workflows</div></div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">What I bring</div>
+          <div class="info-row"><span>Direct Claude, Copilot &amp; Gemini deployment</span><span class="info-row-val">✓ Live</span></div>
+          <div class="info-row"><span>Federal security config (CUI, RBAC, SSO)</span><span class="info-row-val">✓ DOD</span></div>
+          <div class="info-row"><span>End-user enablement &amp; change management</span><span class="info-row-val">✓ Portfolio</span></div>
+          <div class="info-row"><span>AI-integrated database &amp; audit logging</span><span class="info-row-val">✓ Built</span></div>
+          <div class="info-row"><span>Technical runbooks &amp; documentation</span><span class="info-row-val">✓ Authored</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Impact by the numbers</div>
+          <div class="info-row"><span>Monthly ROI from combined AI deployments</span><span class="metric-val">$96K</span></div>
+          <div class="info-row"><span>DOD portfolio value under advisement</span><span class="metric-val">$15B</span></div>
+          <div class="info-row"><span>Commercial sq. ft. previously managed</span><span class="metric-val">1M+</span></div>
+          <div class="info-row"><span>Years of consulting &amp; PM experience</span><span class="metric-val">3+</span></div>
+          <div class="info-row"><span>AI platforms deployed enterprise-wide</span><span class="metric-val">4</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLS PANEL -->
+  <div id="panel-tools" class="panel">
+    <div class="section-label" style="margin-top:0;">Claude-powered</div>
+    <div class="grid-2-tools">
+      <div class="tool-card"><h4>Legal document research assistant</h4><p class="tool-desc">Automates review and extraction of key clauses across DOD contracts and real estate agreements, reducing manual review time significantly.</p><div class="tag-wrap"><span class="tag">Claude</span><span class="tag">CUI-compliant</span></div></div>
+      <div class="tool-card"><h4>Financial forecasting agent</h4><p class="tool-desc">AI-powered financial model for forecasting and tracking sustainment budgets across the Air Force portfolio, with structured data retrieval and audit logging.</p><div class="tag-wrap"><span class="tag">Claude</span><span class="tag">Financial</span></div></div>
+      <div class="tool-card"><h4>Onboarding &amp; FAQ agent</h4><p class="tool-desc">Conversational agent that answers staff questions, surfaces policy documents, and accelerates onboarding across the full user portfolio.</p><div class="tag-wrap"><span class="tag">Claude</span><span class="tag">Agent</span></div></div>
+      <div class="tool-card"><h4>Deliverables automation agent</h4><p class="tool-desc">Claude-powered workflows that streamline report generation, replacing manual processes with repeatable AI pipelines for faster turnaround.</p><div class="tag-wrap"><span class="tag">Claude</span><span class="tag">Automation</span></div></div>
+    </div>
+
+    <div class="section-label">In progress</div>
+    <div class="grid-2-tools">
+      <div class="tool-card-featured">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+          <h4>Accelerate 2030 — AI Consultant for Government Reporting</h4>
+          <span class="tag tag-live" style="white-space:nowrap;margin-left:12px;flex-shrink:0;">JLL Hackathon 2026</span>
+        </div>
+        <p class="tool-desc">A CMMC Level 2 compliant AI consultant that replaces the fragmented ecosystem of government reporting tools with a single AI-powered system. Handles briefing material generation, financial forecasting, and consolidated reporting — purpose-built for the compliance demands of federal engagements.</p>
+        <div class="tag-wrap"><span class="tag">CMMC Level 2</span><span class="tag">Briefing generation</span><span class="tag">Financial forecasting</span><span class="tag">Unified AI interface</span><span class="tag tag-slate">In progress</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Platform &amp; infrastructure</div>
+    <div class="grid-2-tools">
+      <div class="tool-card"><h4>JLL GPT deployment</h4><p class="tool-desc">Configured and operationalized JLL's internal GPT platform for CUI handling, with RBAC, identity provisioning, and data governance protocols.</p><div class="tag-wrap"><span class="tag tag-slate">JLL GPT</span><span class="tag tag-slate">RBAC</span></div></div>
+      <div class="tool-card"><h4>Microsoft Copilot M365 integration</h4><p class="tool-desc">Rolled out Copilot across the M365 ecosystem with SSO, role-based access, and user enablement training for the full portfolio team.</p><div class="tag-wrap"><span class="tag tag-slate">Copilot</span><span class="tag tag-slate">M365</span></div></div>
+      <div class="tool-card"><h4>AI-integrated knowledge database</h4><p class="tool-desc">Built structured databases to support model workflows — enabling retrieval, audit logging, and scalable knowledge management across the portfolio.</p><div class="tag-wrap"><span class="tag tag-slate">Infrastructure</span><span class="tag tag-slate">RAG</span></div></div>
+      <div class="tool-card"><h4>Google Gemini workspace workflows</h4><p class="tool-desc">Deployed Gemini across Google Workspace with custom automation workflows to accelerate document production and communications.</p><div class="tag-wrap"><span class="tag tag-slate">Gemini</span><span class="tag tag-slate">Workspace</span></div></div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE PANEL -->
+  <div id="panel-experience" class="panel">
+    <div class="exp-entry">
+      <div class="exp-header"><span class="exp-company">JLL (Jones Lang LaSalle)</span><span class="exp-loc">San Antonio, TX</span></div>
+      <div class="exp-role-line">Real Estate Consultant / AI Platform Lead &nbsp;·&nbsp; <span class="exp-dates">March 2025 – Present</span></div>
+      <ul class="exp-bullets">
+        <li>Support oversight of the Air Force's $15B P3 portfolio, advising DOD clients on operational management, real estate finance, and legal document compliance.</li>
+        <li>Spearhead portfolio-wide AI Adoption Initiative — architected and deployed enterprise AI workflows across Claude, Copilot, JLL GPT, and Gemini covering the full user base.</li>
+        <li>Selected as JLL AI Champion for the Public Institutions / DOD portfolio — one champion per portfolio — responsible for team training, workflow deployment, and ROI tracking across all AI tools.</li>
+        <li>Named 1 of 10 people across all of JLL Public Institutions to receive Anthropic Claude access; built and deployed agents and workflows used portfolio-wide.</li>
+        <li>Currently competing in JLL's Accelerate 2030 Hackathon, building a CMMC Level 2 compliant AI consultant that consolidates government reporting, briefing generation, and financial forecasting into a single AI-powered system.</li>
+        <li>Configured AI platforms to handle Controlled Unclassified Information (CUI) with identity provisioning, RBAC, and data governance protocols meeting federal requirements.</li>
+        <li>Traveled ~40% to Air Force bases nationwide, conducting on-site visits and delivering briefings to high-level military leadership.</li>
+        <li>Combined AI deployments generate an estimated $96K monthly ROI through time savings, reduced external resourcing, and accelerated deliverable turnaround.</li>
+      </ul>
+    </div>
+    <hr class="exp-divider">
+    <div class="exp-entry">
+      <div class="exp-header"><span class="exp-company">Stream Realty Partners</span><span class="exp-loc">San Antonio, TX</span></div>
+      <div class="exp-role-line">Assistant Manager &nbsp;·&nbsp; <span class="exp-dates">Aug 2024 – Mar 2025</span></div>
+      <ul class="exp-bullets">
+        <li>Managed annual budgets for a commercial portfolio exceeding 1M sq. ft. of Class A office space, ensuring financial accuracy and alignment with client expectations.</li>
+        <li>Executed monthly accruals, AR, and reconciliation reports using Yardi and MRI.</li>
+        <li>Managed and executed capital projects in collaboration with contractors and vendors, completing work within budget and on schedule.</li>
+        <li>Directed building management operations including maintenance, tenant relations, and operational efficiency improvements.</li>
+      </ul>
+      <div style="margin-top:1.1rem;">
+        <div class="exp-role-line">Property Administrator &nbsp;·&nbsp; <span class="exp-dates">Oct 2022 – July 2024</span></div>
+        <ul class="exp-bullets">
+          <li>Coordinated tenant relations and processed work orders; handled accounts payable including reviewing and approving vendor invoices via Avid.</li>
+          <li>Executed full-cycle contract formulation ensuring compliance with company standards and legal requirements; tracked COI for tenants and vendors.</li>
+          <li>Maintained lease documentation and facilitated compliance; provided administrative support for capital projects across cross-functional teams.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREDENTIALS PANEL -->
+  <div id="panel-credentials" class="panel">
+    <div class="section-label" style="margin-top:0;">Recognition</div>
+    <div class="champion-card">
+      <div class="champion-badge">JLL AI<br>Champion<br>Program</div>
+      <div>
+        <div class="champion-title">AI Champion — Public Institutions / DOD Portfolio</div>
+        <div class="champion-detail">Selected as the sole AI Champion for JLL's Public Institutions / DOD portfolio. One of only 10 people across all of JLL Public Institutions granted Anthropic Claude access to build and deploy portfolio-wide workflows and agents.</div>
+      </div>
+    </div>
+    <div class="hack-card">
+      <div class="hack-badge">JLL<br>Hackathon<br>2026 · Live</div>
+      <div>
+        <div class="hack-title">Accelerate 2030 — AI Consultant for Government Reporting</div>
+        <div class="hack-detail">Building a CMMC Level 2 compliant AI system that consolidates government reporting, briefing generation, and financial forecasting into a single AI-powered consultant — currently in progress.</div>
+        <div class="tag-wrap"><span class="tag">CMMC Level 2</span><span class="tag">Briefing generation</span><span class="tag">Financial forecasting</span><span class="tag tag-slate">In progress</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Education</div>
+    <div class="cred-card"><div><div class="cred-school">University of Illinois</div><div class="cred-degree">Masters in Management (MSM)</div><div class="cred-focus">Focus: Project Management</div></div><div class="cred-year">2025 – 2026</div></div>
+    <div class="cred-card"><div><div class="cred-school">University of Illinois</div><div class="cred-degree">MBA Candidate</div><div class="cred-focus">Focus: Business Analytics &amp; Artificial Intelligence</div></div><div class="cred-year">2026 – 2027</div></div>
+    <div class="cred-card"><div><div class="cred-school">University of Texas at San Antonio</div><div class="cred-degree">Bachelor of Arts (BA)</div></div><div class="cred-year">2020 – 2024</div></div>
+
+    <div class="section-label">Certifications &amp; programs</div>
+    <div class="cred-card"><div><div class="cred-school">Harvard Business School Online</div><div class="cred-degree">CORe Program — Financial Accounting, Economics, Business Analytics</div></div><div class="cred-year">2024 – 2025</div></div>
+
+    <div class="section-label">Technical platforms</div>
+    <div class="tag-wrap" style="margin-bottom:1rem;">
+      <span class="tag">Anthropic Claude</span><span class="tag">Microsoft Copilot</span><span class="tag">Google Gemini</span><span class="tag">JLL GPT</span>
+      <span class="tag tag-slate">Yardi</span><span class="tag tag-slate">MRI</span><span class="tag tag-slate">IMPAK</span><span class="tag tag-slate">RealPage</span><span class="tag tag-slate">Avid</span><span class="tag tag-slate">RBAC / SSO</span><span class="tag tag-slate">CUI compliance</span>
+    </div>
+  </div>
+
+</div>
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+function setTarget(t) {
+  document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + t).classList.add('active');
+  document.getElementById('overview-deloitte').style.display = t === 'deloitte' ? 'block' : 'none';
+  document.getElementById('overview-slate').style.display = t === 'slate' ? 'block' : 'none';
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-overview').classList.add('active');
+  document.querySelector('.tab-btn').classList.add('active');
+}
+</script>
+</body>
+</html>
